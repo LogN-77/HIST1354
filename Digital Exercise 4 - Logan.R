@@ -1,34 +1,26 @@
-# Install necessary library
 install.packages("dplyr")
 install.packages("ggplot2")
 
-# Load necessary library
 library(dplyr)
 library(ggplot2)
 
-# Load the datasets
 census_data <- read.csv("census_data.csv") 
 county_codes <- read.csv("county_codes.csv")
 
-# Clean column names in the county_codes dataset for consistency
 colnames(county_codes) <- gsub(" ", "_", colnames(county_codes))
 
-# Identify Davidson County's codes
 davidson_county_info <- county_codes[county_codes$State == "Tennessee" & county_codes$County == "Davidson", ]
-# Extract the state and county codes for Davidson
+
 state_code <- davidson_county_info$STATEICP
 county_code <- davidson_county_info$County_cod
 
-# Filter census data for Davidson County and years 1820, 1830, 1840 using base R
 davidson_census <- census_data[census_data$stateicp == state_code &
                                  census_data$county == county_code &
                                  census_data$year %in% c(1820, 1830, 1840), ]
 
-# Group by year and calculate the total population
 davidson_census_summary <- aggregate(ntotal ~ year, data = davidson_census, sum, na.rm = TRUE)
 print(davidson_census_summary)
 
-# Plot the population trend
 library(ggplot2)
 ggplot(davidson_census_summary, aes(x = year, y = ntotal)) +
   geom_line() +
